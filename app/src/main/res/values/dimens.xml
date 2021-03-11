@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--margins do not use these-->
+    <dimen name="margin_0">0dp</dimen>
+    <dimen name="margin_5">5dp</dimen>
+    <dimen name="margin_10">10dp</dimen>
+    <dimen name="margin_20">20dp</dimen>
+    <dimen name="margin_22">22dp</dimen>
+    <dimen name="margin_8">8dp</dimen>
+    <dimen name="margin_15">15dp</dimen>
+    <dimen name="margin_17">17dp</dimen>
+    <dimen name="margin_16">16dp</dimen>
+    <dimen name="margin_24">24dp</dimen>
+    <dimen name="margin_19">19dp</dimen>
+    <dimen name="margin_26">26dp</dimen>
+    <dimen name="margin_28">28dp</dimen>
+    <dimen name="margin_31">31dp</dimen>
+    <dimen name="margin_34">34dp</dimen>
+    <dimen name="margin_44">44dp</dimen>
+    <dimen name="margin_45">45dp</dimen>
+    <dimen name="margin_90">90dp</dimen>
+    <dimen name="margin_100">100dp</dimen>
+    <dimen name="margin_146">146dp</dimen>
+    <dimen name="margin_200">200dp</dimen>
+    <dimen name="margin_180">180dp</dimen>
+    <dimen name="margin_300">300dp</dimen>
+    <dimen name="margin_250">250dp</dimen>
+
+    <!--Listing-->
+    <dimen name="grid_item_offset">8dp</dimen>
+    <dimen name="home_recycler_header_padding">16dp</dimen>
+    <dimen name="home_recycler_see_all_padding">59dp</dimen>
+    <dimen name="text_size_12">12sp</dimen>
+    <dimen name="text_size_16">16sp</dimen>
+    <dimen name="text_size_17">17sp</dimen>
+    <dimen name="text_size_18">18sp</dimen>
+    <dimen name="text_size_15">15sp</dimen>
+    <dimen name="text_size_14">14sp</dimen>
+    <dimen name="text_size_19">19sp</dimen>
+    <dimen name="text_size_20">20sp</dimen>
+    <dimen name="text_size_22">22sp</dimen>
+    <dimen name="margin_9">9dp</dimen>
+    <dimen name="margin_25">25dp</dimen>
+    <dimen name="margin_35">35dp</dimen>
+    <dimen name="margin_4">4dp</dimen>
+    <dimen name="margin_23">23dp</dimen>
+    <dimen name="margin_3">3dp</dimen>
+    <dimen name="margin_12">12dp</dimen>
+    <dimen name="margin_7">7dp</dimen>
+    <dimen name="margin_38">38dp</dimen>
+    <dimen name="margin_11">11dp</dimen>
+    <dimen name="text_size_35">35dp</dimen>
+
+
+    <!--Google Voice Search-->
+    <dimen name="search_mic_width">25dp</dimen>
+    <dimen name="margin_80">80dp</dimen>
+    <dimen name="voice_view_mic">150dp</dimen>
+    <dimen name="demo_size">35dp</dimen>
+    <dimen name="margin_below_google">50dp</dimen>
+    <dimen name="demo_size_2">24sp</dimen>
+    <dimen name="google_text_size">24sp</dimen>
+    <dimen name="text_size_11">11sp</dimen>
+</resources>

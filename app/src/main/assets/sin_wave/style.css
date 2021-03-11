@@ -1,0 +1,14 @@
+html,
+body {
+  background-color: #fffff;
+}
+
+.hero__wave-container {
+  max-width: 100vw;
+  overflow: hidden;
+}
+
+.hero__wave {
+  transform: translate3d(0, 0, 0);
+  animation: waveAnim 420s 0s linear infinite;
+}
