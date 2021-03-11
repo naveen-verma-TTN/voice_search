@@ -33,12 +33,11 @@
         app:cardCornerRadius="10dp"
         android:requiresFadingEdge="vertical">
 
-        <fragment
+        <FrameLayout
+            android:id="@+id/voice_fragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            class="com.example.voicesearch.VoiceSearchFragment"
-            tools:layout="@layout/fragment_voice_search"
-            android:tag="VoiceSearchFragment" />
+            tools:layout="@layout/fragment_voice_search"/>
 
     </androidx.cardview.widget.CardView>
 
