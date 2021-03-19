@@ -1,35 +1,71 @@
 package com.example.voicesearch
 
-import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentTransaction
+import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.RecyclerView
+import com.example.voicesearch.adapter.TextAdapter
+import com.example.voicesearch.helper.Utility
+import com.example.voicesearch.permission_handler.PermissionHandler
+import com.example.voicesearch.permission_handler.PermissionListener
+import com.google.android.flexbox.FlexDirection
+import com.google.android.flexbox.FlexboxLayoutManager
+import com.google.android.flexbox.JustifyContent
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), PermissionListener, VoiceSearchFragment.VoiceData {
 
     companion object{
         private const val MY_PERMISSIONS_RECORD_AUDIO = 1
     }
 
-    var sheetBehavior: BottomSheetBehavior<*>? = null
-
+    private var sheetBehavior: BottomSheetBehavior<*>? = null
+    private lateinit var textAdapter: TextAdapter
+    private lateinit var permissionHandler: PermissionHandler
+    private val dataList: ArrayList<String> = ArrayList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
         supportActionBar?.hide()
+
+        permissionHandler = PermissionHandler(this, this)
 
         val bottomSheet = findViewById<View>(R.id.bottom_layout)
         sheetBehavior = BottomSheetBehavior.from(bottomSheet)
 
+        bottomSheetCallback()
+    }
+
+    override fun loadVoiceSearch() {
+        toggleBottomSheet()
+        initRecyclerView()
+        val ft: FragmentTransaction = supportFragmentManager.beginTransaction()
+        ft.replace(R.id.voice_fragment, VoiceSearchFragment())
+        ft.commit()
+    }
+
+    private fun initRecyclerView() {
+        val recyclerView: RecyclerView = findViewById(R.id.recycler_view)
+        textAdapter = TextAdapter(dataList)
+
+        val manager = FlexboxLayoutManager(this)
+
+        manager.flexDirection = FlexDirection.ROW
+        manager.justifyContent = JustifyContent.FLEX_START
+
+        recyclerView.layoutManager = manager
+        recyclerView.itemAnimator = DefaultItemAnimator()
+        recyclerView.adapter = textAdapter
+    }
+
+    private fun bottomSheetCallback() {
         sheetBehavior?.addBottomSheetCallback(object : BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 when (newState) {
@@ -51,7 +87,7 @@ class MainActivity : AppCompatActivity() {
             override fun onSlide(bottomSheet: View, slideOffset: Float) {}
         })
 
-        requestAudioPermissions()
+        permissionHandler.requestAudioPermissions()
     }
 
     private fun toggleBottomSheet() {
@@ -70,40 +106,17 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    private fun requestAudioPermissions() {
-        if (ContextCompat.checkSelfPermission(this,
-                        Manifest.permission.RECORD_AUDIO)
-                != PackageManager.PERMISSION_GRANTED) {
 
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                            Manifest.permission.RECORD_AUDIO)) {
-                Utility.showToast(this, "Please grant permissions to record audio")
-
-                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.RECORD_AUDIO),
-                        MY_PERMISSIONS_RECORD_AUDIO)
-            } else {
-                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.RECORD_AUDIO),
-                        MY_PERMISSIONS_RECORD_AUDIO)
-            }
-        } else if (ContextCompat.checkSelfPermission(this,
-                        Manifest.permission.RECORD_AUDIO)
-                == PackageManager.PERMISSION_GRANTED) {
-            loadVoiceSearch()
-        }
-    }
-
-    private fun loadVoiceSearch() {
-        toggleBottomSheet()
-        val ft: FragmentTransaction = supportFragmentManager.beginTransaction()
-        ft.replace(R.id.voice_fragment, VoiceSearchFragment())
-        ft.commit()
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
         when (requestCode) {
             MY_PERMISSIONS_RECORD_AUDIO -> {
                 if (grantResults.isNotEmpty()
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED
+                ) {
                     loadVoiceSearch()
                 } else {
                     Utility.showToast(this, "Permissions Denied to record audio")
@@ -112,4 +125,11 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
+    override fun sendData(speaker: String?, text: String?) {
+            text?.let {
+                dataList.add(it)
+                textAdapter.setList(dataList)
+            }
+        }
 }

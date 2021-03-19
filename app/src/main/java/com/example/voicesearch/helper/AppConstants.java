@@ -1,4 +1,4 @@
-package com.example.voicesearch;
+package com.example.voicesearch.helper;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -15,6 +15,9 @@ public interface AppConstants {
     String VOICE_DATA_RESULT = "SEARCH-DATA";
     int VOICE_SEARCH_PERMISSION_REQUEST_CODE = 112;
 
-    String TEXT_TO_SPEECH_LANG_CODE = "hin";
-    String SPEECH_TO_TEXT_LANG_CODE = "hi";
+  /*  String TEXT_TO_SPEECH_LANG_CODE = "hin";
+    String SPEECH_TO_TEXT_LANG_CODE = "hi";*/
+
+    String TEXT_TO_SPEECH_LANG_CODE = "Eng-In";
+    String SPEECH_TO_TEXT_LANG_CODE = "en";
 }

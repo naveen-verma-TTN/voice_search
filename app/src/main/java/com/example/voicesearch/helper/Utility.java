@@ -1,10 +1,12 @@
-package com.example.voicesearch;
+package com.example.voicesearch.helper;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
 import android.widget.Toast;
+
+import com.example.voicesearch.App;
 
 /**
  * Created by Naveen Verma on 9/3/21.

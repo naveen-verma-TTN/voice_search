@@ -1,6 +1,7 @@
 package com.example.voicesearch
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -21,12 +22,19 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import com.example.voicesearch.controller.ControllerListener
 import com.example.voicesearch.databinding.FragmentVoiceSearchBinding
+import com.example.voicesearch.helper.AppConstants
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
 import kotlinx.android.synthetic.main.fragment_voice_search.*
 import kotlinx.android.synthetic.main.fragment_voice_search.view.*
 import java.util.*
 
 
-class VoiceSearchFragment : Fragment(), VoiceRecognizerView, ControllerListener.Listener {
+class VoiceSearchFragment : Fragment(), ControllerListener.Listener {
+    interface VoiceData {
+        fun sendData(speaker: String?, text: String?)
+    }
+
     var stateTV: TextView? = null
     var displayTV: TextView? = null
     private lateinit var mBinding: FragmentVoiceSearchBinding
@@ -35,16 +43,43 @@ class VoiceSearchFragment : Fragment(), VoiceRecognizerView, ControllerListener.
     private var controller: ControllerListener? = null
     private lateinit var webView: WebView
     private var textToSpeech: TextToSpeech? = null
+    private lateinit var voiceData: VoiceData
+    private var chip: Chip? = null
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_voice_search, container, false)
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        try {
+            voiceData = activity as VoiceData
+        } catch (e: ClassCastException) {
+            throw ClassCastException(activity.toString() + " must implement onSomeEventListener")
+        }
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        mBinding = DataBindingUtil.inflate(
+            inflater,
+            R.layout.fragment_voice_search,
+            container,
+            false
+        )
         stateTV = mBinding.stateTv
         displayTV = mBinding.displayTv
 
         controller = ControllerListener(this)
         textToSpeech = TextToSpeech(App.getContext().applicationContext) { status ->
             if (status != TextToSpeech.ERROR) {
-                val voice = Voice("voice", Locale.getDefault(), Voice.QUALITY_VERY_HIGH, Voice.LATENCY_NORMAL, false, null)
+                val voice = Voice(
+                    "voice",
+                    Locale.getDefault(),
+                    Voice.QUALITY_VERY_HIGH,
+                    Voice.LATENCY_NORMAL,
+                    false,
+                    null
+                )
                 textToSpeech?.voice = voice
                 textToSpeech?.language = Locale.forLanguageTag(AppConstants.TEXT_TO_SPEECH_LANG_CODE)
             }
@@ -72,6 +107,8 @@ class VoiceSearchFragment : Fragment(), VoiceRecognizerView, ControllerListener.
             }
         }
 
+        initChipView(view)
+
         view.mic_view.setOnClickListener {
             startListening()
         }
@@ -79,15 +116,41 @@ class VoiceSearchFragment : Fragment(), VoiceRecognizerView, ControllerListener.
         startListening()
     }
 
+    private fun initChipView(view: View) {
+        val chipGroup: ChipGroup = view.findViewById(R.id.chip_group)
+        mBinding.chipMale.isChecked = true
+        chipGroup.setOnCheckedChangeListener { cg, i ->
+            chip = cg.findViewById(i)
+        }
+    }
+
     private fun createRecognizerIntent() {
         mSpeechRecognizerIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
-        mSpeechRecognizerIntent!!.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH)
-        mSpeechRecognizerIntent!!.putExtra(RecognizerIntent.EXTRA_LANGUAGE, AppConstants.SPEECH_TO_TEXT_LANG_CODE)
-        mSpeechRecognizerIntent!!.putExtra(RecognizerIntent.EXTRA_ONLY_RETURN_LANGUAGE_PREFERENCE, AppConstants.SPEECH_TO_TEXT_LANG_CODE)
-        mSpeechRecognizerIntent!!.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS, 65000)
-        mSpeechRecognizerIntent!!.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_MINIMUM_LENGTH_MILLIS, 65000)
+        mSpeechRecognizerIntent!!.putExtra(
+            RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+            RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH
+        )
+        mSpeechRecognizerIntent!!.putExtra(
+            RecognizerIntent.EXTRA_LANGUAGE,
+            AppConstants.SPEECH_TO_TEXT_LANG_CODE
+        )
+        mSpeechRecognizerIntent!!.putExtra(
+            RecognizerIntent.EXTRA_ONLY_RETURN_LANGUAGE_PREFERENCE,
+            AppConstants.SPEECH_TO_TEXT_LANG_CODE
+        )
+        mSpeechRecognizerIntent!!.putExtra(
+            RecognizerIntent.EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS,
+            65000
+        )
+        mSpeechRecognizerIntent!!.putExtra(
+            RecognizerIntent.EXTRA_SPEECH_INPUT_MINIMUM_LENGTH_MILLIS,
+            65000
+        )
         mSpeechRecognizerIntent!!.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
-        mSpeechRecognizerIntent!!.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, activity!!.packageName)
+        mSpeechRecognizerIntent!!.putExtra(
+            RecognizerIntent.EXTRA_CALLING_PACKAGE,
+            activity!!.packageName
+        )
     }
 
     override fun onStartListen() {
@@ -118,7 +181,7 @@ class VoiceSearchFragment : Fragment(), VoiceRecognizerView, ControllerListener.
         displayTV?.text = App.getContext().resources.getString(R.string.try_saying_bottom)
     }
 
-    override fun onCancel() {
+/*    override fun onCancel() {
         try {
             mSpeechRecognizer.cancel()
             mSpeechRecognizer.destroy()
@@ -128,18 +191,13 @@ class VoiceSearchFragment : Fragment(), VoiceRecognizerView, ControllerListener.
             controller?.stopRecording()
         } catch (ignored: Exception) {
         }
-    }
+    }*/
 
     fun onFailure() {
         controller?.stopRecording()
         stateTV!!.text = App.getContext().resources.getString(R.string.try_saying_bottom)
         displayTV!!.text = App.getContext().resources.getString(R.string.tap_on_mic)
         displayTV!!.visibility = View.VISIBLE
-    }
-
-    override fun onStop() {
-        super.onStop()
-        onCancel()
     }
 
     internal inner class Recogniser : RecognitionListener {
@@ -164,6 +222,9 @@ class VoiceSearchFragment : Fragment(), VoiceRecognizerView, ControllerListener.
                     voiceSearchResult = s
                 }
             }
+            stateTV!!.text = voiceSearchResult
+
+            voiceData.sendData(chip?.text.toString(), voiceSearchResult)
 
             Handler(Looper.getMainLooper()).postDelayed({
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -185,3 +246,4 @@ class VoiceSearchFragment : Fragment(), VoiceRecognizerView, ControllerListener.
         override fun onEvent(eventType: Int, params: Bundle) {}
     }
 }
+

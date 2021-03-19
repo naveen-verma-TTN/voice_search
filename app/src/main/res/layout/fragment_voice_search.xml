@@ -6,10 +6,6 @@
     <data>
 
         <import type="android.view.View" />
-
-        <variable
-            name="viewModel"
-            type="com.example.voicesearch.VoiceRecognizerViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -53,7 +49,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginHorizontal="@dimen/margin_20"
-            android:layout_marginVertical="@dimen/margin_10"
+            android:layout_marginVertical="@dimen/margin_5"
             app:layout_constraintBottom_toTopOf="@+id/mic_view"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -65,9 +61,58 @@
             android:layout_height="wrap_content"
             android:src="@drawable/mic_with_shadow"
             android:visibility="visible"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/chip_group"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chip_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:singleSelection="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:selectionRequired="true"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_male"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:clickable="true"
+                android:focusable="true"
+                app:chipBackgroundColor="@color/bg_chip_state_list"
+                app:rippleColor="@color/warm_grey"
+                android:textColor="@color/white"
+
+                android:text="@string/male"/>
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_female"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:clickable="true"
+                android:focusable="true"
+                app:chipBackgroundColor="@color/bg_chip_state_list"
+                app:rippleColor="@color/warm_grey"
+                android:textColor="@color/white"
+                android:text="@string/female"/>
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_child"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:clickable="true"
+                android:focusable="true"
+                app:chipBackgroundColor="@color/bg_chip_state_list"
+                app:rippleColor="@color/warm_grey"
+                android:textColor="@color/white"
+                android:text="@string/child"/>
+
+        </com.google.android.material.chip.ChipGroup>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

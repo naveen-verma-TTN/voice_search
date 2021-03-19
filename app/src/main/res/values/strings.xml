@@ -6,5 +6,8 @@
     <string name="try_saying_bottom">Try saying</string>
     <string name="tap_on_mic">Tap the microphone to try again</string>
     <string name="listening">Listening…</string>
+    <string name="child">CHILD</string>
+    <string name="female">FEMALE</string>
+    <string name="male">MALE</string>
 
 </resources>

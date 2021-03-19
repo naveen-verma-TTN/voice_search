@@ -13,4 +13,6 @@
 
     <color name="greyish_brown">#424242</color>
     <color name="warm_grey">#979797</color>
+    <color name="material_purple">#CE93D8</color>
+    <color name="material_dark_purple">#9C27B0</color>
 </resources>
