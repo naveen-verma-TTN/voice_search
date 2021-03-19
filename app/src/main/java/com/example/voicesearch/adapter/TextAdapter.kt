@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.voicesearch.R
-import java.util.ArrayList
 
 
 /**
@@ -35,8 +34,9 @@ internal class TextAdapter(private var titleList: List<String>) : RecyclerView.A
         return titleList.size
     }
 
-    fun setList(dataList: ArrayList<String>) {
-        this.titleList = dataList
+    fun setList(data: String) {
+//        (this.titleList as ArrayList<String>).add(data)
+        (this.titleList as ArrayList<String>).reverse()
         notifyDataSetChanged()
     }
 }

@@ -6,7 +6,7 @@ import android.net.NetworkInfo;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.example.voicesearch.App;
+import com.example.voicesearch.app.App;
 
 /**
  * Created by Naveen Verma on 9/3/21.

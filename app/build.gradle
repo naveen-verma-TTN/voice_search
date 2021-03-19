@@ -3,6 +3,7 @@ plugins {
     id 'kotlin-android'
     id 'kotlin-android-extensions'
     id 'kotlin-kapt'
+    id 'com.google.gms.google-services'
 }
 
 android {
@@ -10,6 +11,7 @@ android {
     buildToolsVersion "30.0.1"
 
     defaultConfig {
+        multiDexEnabled true
         applicationId "com.example.voicesearch"
         minSdkVersion 21
         targetSdkVersion 30
@@ -54,4 +56,17 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 
     implementation 'com.google.android:flexbox:2.0.1'
+
+    // MultiDex
+    def multiDex_version = "1.0.3"
+    implementation 'androidx.multidex:multidex:2.0.0'
+
+    // Koin
+    def koin_version = '2.2.2'
+    implementation "org.koin:koin-android:$koin_version"
+    implementation "org.koin:koin-androidx-viewmodel:$koin_version"
+    implementation "org.koin:koin-androidx-scope:$koin_version"
+
+    implementation platform('com.google.firebase:firebase-bom:26.3.0')
+    implementation 'com.google.firebase:firebase-database-ktx'
 }

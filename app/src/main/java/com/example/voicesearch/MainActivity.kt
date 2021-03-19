@@ -5,22 +5,30 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentTransaction
+import androidx.lifecycle.Observer
+import androidx.lifecycle.observe
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.RecyclerView
 import com.example.voicesearch.adapter.TextAdapter
+import com.example.voicesearch.app.App
 import com.example.voicesearch.helper.Utility
 import com.example.voicesearch.permission_handler.PermissionHandler
 import com.example.voicesearch.permission_handler.PermissionListener
+import com.example.voicesearch.viewmodel.VoiceViewModel
 import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
+import kotlinx.android.synthetic.main.activity_main.*
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class MainActivity : AppCompatActivity(), PermissionListener, VoiceSearchFragment.VoiceData {
 
-    companion object{
+    private val userViewModel by viewModel<VoiceViewModel>()
+
+    companion object {
         private const val MY_PERMISSIONS_RECORD_AUDIO = 1
     }
 
@@ -28,6 +36,8 @@ class MainActivity : AppCompatActivity(), PermissionListener, VoiceSearchFragmen
     private lateinit var textAdapter: TextAdapter
     private lateinit var permissionHandler: PermissionHandler
     private val dataList: ArrayList<String> = ArrayList()
+    private var speaker: String? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +51,21 @@ class MainActivity : AppCompatActivity(), PermissionListener, VoiceSearchFragmen
         sheetBehavior = BottomSheetBehavior.from(bottomSheet)
 
         bottomSheetCallback()
+
+        iv_upload.setOnClickListener {
+            speaker?.let { s ->
+                dataList.forEach { text ->
+                    userViewModel.sendDataToServer(s, text).observe(this, Observer { isSuccess ->
+                        if (isSuccess) {
+                            dataList.clear()
+                            Utility.showToast(App.getContext(), "Data uploaded to the cloud server")
+                        } else {
+                            Utility.showToast(App.getContext(), "Failed to save data")
+                        }
+                    })
+                }
+            }
+        }
     }
 
     override fun loadVoiceSearch() {
@@ -72,8 +97,10 @@ class MainActivity : AppCompatActivity(), PermissionListener, VoiceSearchFragmen
                     BottomSheetBehavior.STATE_HIDDEN -> {
                     }
                     BottomSheetBehavior.STATE_EXPANDED -> {
+                        iv_upload.visibility = View.GONE
                     }
                     BottomSheetBehavior.STATE_COLLAPSED -> {
+                        iv_upload.visibility = View.VISIBLE
                     }
                     BottomSheetBehavior.STATE_DRAGGING -> {
                     }
@@ -85,6 +112,8 @@ class MainActivity : AppCompatActivity(), PermissionListener, VoiceSearchFragmen
             }
 
             override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+
+
         })
 
         permissionHandler.requestAudioPermissions()
@@ -126,10 +155,9 @@ class MainActivity : AppCompatActivity(), PermissionListener, VoiceSearchFragmen
         }
     }
 
-    override fun sendData(speaker: String?, text: String?) {
-            text?.let {
-                dataList.add(it)
-                textAdapter.setList(dataList)
-            }
-        }
+    override fun sendData(speaker: CharSequence, text: String) {
+        this.speaker = speaker.toString()
+        dataList.add(text)
+        textAdapter.setList(text)
+    }
 }

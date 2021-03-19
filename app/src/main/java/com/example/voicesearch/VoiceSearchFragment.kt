@@ -20,6 +20,7 @@ import android.webkit.WebViewClient
 import android.widget.TextView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import com.example.voicesearch.app.App
 import com.example.voicesearch.controller.ControllerListener
 import com.example.voicesearch.databinding.FragmentVoiceSearchBinding
 import com.example.voicesearch.helper.AppConstants
@@ -32,7 +33,7 @@ import java.util.*
 
 class VoiceSearchFragment : Fragment(), ControllerListener.Listener {
     interface VoiceData {
-        fun sendData(speaker: String?, text: String?)
+        fun sendData(speaker: CharSequence, text: String)
     }
 
     var stateTV: TextView? = null
@@ -81,7 +82,8 @@ class VoiceSearchFragment : Fragment(), ControllerListener.Listener {
                     null
                 )
                 textToSpeech?.voice = voice
-                textToSpeech?.language = Locale.forLanguageTag(AppConstants.TEXT_TO_SPEECH_LANG_CODE)
+                textToSpeech?.language =
+                    Locale.forLanguageTag(AppConstants.TEXT_TO_SPEECH_LANG_CODE)
             }
         }
 
@@ -163,10 +165,9 @@ class VoiceSearchFragment : Fragment(), ControllerListener.Listener {
     }
 
     private fun toggleMic(isListening: Boolean) {
-        if(isListening) {
+        if (isListening) {
             mic_view.visibility = View.GONE
-        }
-        else {
+        } else {
             displayTV!!.text = App.getContext().resources.getString(R.string.tap_on_mic)
             displayTV!!.visibility = View.VISIBLE
             mic_view.visibility = View.VISIBLE
@@ -203,7 +204,7 @@ class VoiceSearchFragment : Fragment(), ControllerListener.Listener {
     internal inner class Recogniser : RecognitionListener {
         override fun onPartialResults(partialResults: Bundle) {
             val matches = partialResults.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
-                    ?: return
+                ?: return
             var textFromVoice: String? = ""
             for ((i, s) in matches.withIndex()) {
                 if (i == 0) {
@@ -224,7 +225,7 @@ class VoiceSearchFragment : Fragment(), ControllerListener.Listener {
             }
             stateTV!!.text = voiceSearchResult
 
-            voiceData.sendData(chip?.text.toString(), voiceSearchResult)
+            voiceData.sendData(chip?.text ?: "Male", voiceSearchResult!!)
 
             Handler(Looper.getMainLooper()).postDelayed({
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -242,7 +243,10 @@ class VoiceSearchFragment : Fragment(), ControllerListener.Listener {
         override fun onBeginningOfSpeech() {}
         override fun onBufferReceived(buffer: ByteArray) {}
         override fun onEndOfSpeech() {}
-        override fun onError(error: Int) { onFailure() }
+        override fun onError(error: Int) {
+            onFailure()
+        }
+
         override fun onEvent(eventType: Int, params: Bundle) {}
     }
 }

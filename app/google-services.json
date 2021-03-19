@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "467895885916",
+    "project_id": "native-voice-search",
+    "storage_bucket": "native-voice-search.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:467895885916:android:b9b952a6c6d95cce8c4699",
+        "android_client_info": {
+          "package_name": "com.example.voicesearch"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "467895885916-j9c55cotvc2ii8egekk5liljpod3a4lk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC6Na8-FEk50WuMsnaU55iV71DEMGLmJf8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "467895885916-j9c55cotvc2ii8egekk5liljpod3a4lk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
