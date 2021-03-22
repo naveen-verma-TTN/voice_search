@@ -177,12 +177,14 @@ class VoiceSearchFragment : Fragment(), ControllerListener.Listener {
     }
 
     private fun toggleMic(isListening: Boolean) {
-        if (isListening) {
-            mic_view.visibility = View.GONE
-        } else {
-            displayTV!!.text = App.getContext().resources.getString(R.string.tap_on_mic)
-            displayTV!!.visibility = View.VISIBLE
-            mic_view.visibility = View.VISIBLE
+        if(mic_view != null) {
+            if (isListening) {
+                mic_view.visibility = View.GONE
+            } else {
+                displayTV!!.text = App.getContext().resources.getString(R.string.tap_on_mic)
+                displayTV!!.visibility = View.VISIBLE
+                mic_view.visibility = View.VISIBLE
+            }
         }
     }
 
