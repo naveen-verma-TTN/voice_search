@@ -3,6 +3,7 @@ package com.example.voicesearch.app
 import android.app.Application
 import android.content.Context
 import androidx.multidex.MultiDex
+import com.example.voicesearch.MainActivity
 import com.example.voicesearch.app.di.viewModelModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger

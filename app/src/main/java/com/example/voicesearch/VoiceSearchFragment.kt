@@ -13,7 +13,9 @@ import android.speech.SpeechRecognizer
 import android.speech.tts.TextToSpeech
 import android.speech.tts.Voice
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
+import android.view.View.OnTouchListener
 import android.view.ViewGroup
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -24,14 +26,19 @@ import com.example.voicesearch.app.App
 import com.example.voicesearch.controller.ControllerListener
 import com.example.voicesearch.databinding.FragmentVoiceSearchBinding
 import com.example.voicesearch.helper.AppConstants
+import com.example.voicesearch.viewmodel.VoiceViewModel
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import kotlinx.android.synthetic.main.fragment_voice_search.*
 import kotlinx.android.synthetic.main.fragment_voice_search.view.*
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
 
 
 class VoiceSearchFragment : Fragment(), ControllerListener.Listener {
+
+    private val userViewModel by viewModel<VoiceViewModel>()
+
     interface VoiceData {
         fun sendData(speaker: CharSequence, text: String)
     }
@@ -96,12 +103,16 @@ class VoiceSearchFragment : Fragment(), ControllerListener.Listener {
         return mBinding.root
     }
 
-    @SuppressLint("SetJavaScriptEnabled")
+    @SuppressLint("SetJavaScriptEnabled", "ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         webView = view.findViewById(R.id.animation_webView) as WebView
         webView.settings.javaScriptEnabled = true
+        // disable scroll on touch
+        // disable scroll on touch
+        webView.setOnTouchListener { _, event -> event.action == MotionEvent.ACTION_MOVE }
+        webView.isScrollContainer = false
         webView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView?, url: String): Boolean {
                 view?.loadUrl(url)
@@ -123,6 +134,7 @@ class VoiceSearchFragment : Fragment(), ControllerListener.Listener {
         mBinding.chipMale.isChecked = true
         chipGroup.setOnCheckedChangeListener { cg, i ->
             chip = cg.findViewById(i)
+            userViewModel.readFromDataBase(chip?.text?.toString() ?: "MALE")
         }
     }
 
@@ -151,7 +163,7 @@ class VoiceSearchFragment : Fragment(), ControllerListener.Listener {
         mSpeechRecognizerIntent!!.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
         mSpeechRecognizerIntent!!.putExtra(
             RecognizerIntent.EXTRA_CALLING_PACKAGE,
-            activity!!.packageName
+            requireActivity().packageName
         )
     }
 
@@ -225,7 +237,7 @@ class VoiceSearchFragment : Fragment(), ControllerListener.Listener {
             }
             stateTV!!.text = voiceSearchResult
 
-            voiceData.sendData(chip?.text ?: "Male", voiceSearchResult!!)
+            voiceData.sendData(chip?.text ?: "MALE", voiceSearchResult!!)
 
             Handler(Looper.getMainLooper()).postDelayed({
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

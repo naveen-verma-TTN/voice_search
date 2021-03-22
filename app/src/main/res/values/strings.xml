@@ -10,5 +10,6 @@
     <string name="female">FEMALE</string>
     <string name="male">MALE</string>
     <string name="send_data_to_server">Send Data To Server</string>
+    <string name="upload">upload</string>
 
 </resources>

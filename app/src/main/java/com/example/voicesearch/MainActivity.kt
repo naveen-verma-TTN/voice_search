@@ -1,12 +1,16 @@
 package com.example.voicesearch
 
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.os.Bundle
+import android.text.TextPaint
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.Observer
-import androidx.lifecycle.observe
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.RecyclerView
 import com.example.voicesearch.adapter.TextAdapter
@@ -14,12 +18,14 @@ import com.example.voicesearch.app.App
 import com.example.voicesearch.helper.Utility
 import com.example.voicesearch.permission_handler.PermissionHandler
 import com.example.voicesearch.permission_handler.PermissionListener
+import com.example.voicesearch.viewmodel.ProgressStatus
 import com.example.voicesearch.viewmodel.VoiceViewModel
 import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
+import com.magicgoop.tagsphere.item.TextTagItem
 import kotlinx.android.synthetic.main.activity_main.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -52,20 +58,45 @@ class MainActivity : AppCompatActivity(), PermissionListener, VoiceSearchFragmen
 
         bottomSheetCallback()
 
-        iv_upload.setOnClickListener {
-            speaker?.let { s ->
-                dataList.forEach { text ->
-                    userViewModel.sendDataToServer(s, text).observe(this, Observer { isSuccess ->
-                        if (isSuccess) {
-                            dataList.clear()
-                            Utility.showToast(App.getContext(), "Data uploaded to the cloud server")
-                        } else {
-                            Utility.showToast(App.getContext(), "Failed to save data")
-                        }
-                    })
+        addListeners()
+
+        tagView.setRadius(1f)
+        tagView.setTextPaint(
+            TextPaint().apply {
+                isAntiAlias = true
+                textSize = resources.getDimension(R.dimen.text_size_12)
+                color = Color.WHITE
+            }
+        )
+    }
+
+    private fun addListeners() {
+        userViewModel.status.observe(this, { status ->
+            status?.let {
+                when (it) {
+                    ProgressStatus.SHOW_PROGRESS -> {
+                        avi.smoothToShow()
+                    }
+                    ProgressStatus.HIDE_PROGRESS -> {
+                        avi.smoothToHide()
+                    }
                 }
             }
-        }
+        })
+
+        userViewModel.readFromDataBase("MALE")
+
+        userViewModel.response.observe(this, { response ->
+            if (response.isNotEmpty()) {
+                tagView.clearAllTags()
+                response.map {
+                    TextTagItem(text = it)
+                }.toList().let { tagView.addTagList(it) }
+            }
+            else {
+                tagView.clearAllTags()
+            }
+        })
     }
 
     override fun loadVoiceSearch() {
@@ -97,10 +128,10 @@ class MainActivity : AppCompatActivity(), PermissionListener, VoiceSearchFragmen
                     BottomSheetBehavior.STATE_HIDDEN -> {
                     }
                     BottomSheetBehavior.STATE_EXPANDED -> {
-                        iv_upload.visibility = View.GONE
+                        supportActionBar?.hide()
                     }
                     BottomSheetBehavior.STATE_COLLAPSED -> {
-                        iv_upload.visibility = View.VISIBLE
+                        supportActionBar?.show()
                     }
                     BottomSheetBehavior.STATE_DRAGGING -> {
                     }
@@ -141,6 +172,7 @@ class MainActivity : AppCompatActivity(), PermissionListener, VoiceSearchFragmen
         permissions: Array<out String>,
         grantResults: IntArray
     ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode) {
             MY_PERMISSIONS_RECORD_AUDIO -> {
                 if (grantResults.isNotEmpty()
@@ -158,6 +190,32 @@ class MainActivity : AppCompatActivity(), PermissionListener, VoiceSearchFragmen
     override fun sendData(speaker: CharSequence, text: String) {
         this.speaker = speaker.toString()
         dataList.add(text)
+        tagView.addTag(TextTagItem(text))
         textAdapter.setList(text)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val id: Int = item.itemId
+        if (id == R.id.action_upload) {
+            speaker?.let { s ->
+                dataList.forEach { text ->
+                    userViewModel.sendDataToServer(s, text).observe(this, { isSuccess ->
+                        if (isSuccess) {
+                            dataList.clear()
+                            Utility.showToast(App.getContext(), "Data uploaded to the cloud server")
+                        } else {
+                            Utility.showToast(App.getContext(), "Failed to save data")
+                        }
+                    })
+                }
+            }
+            return true
+        }
+        return super.onOptionsItemSelected(item)
     }
 }
