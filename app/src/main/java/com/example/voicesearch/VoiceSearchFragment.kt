@@ -67,7 +67,7 @@ class VoiceSearchFragment : Fragment(), ControllerListener.Listener {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         mBinding = DataBindingUtil.inflate(
             inflater,
             R.layout.fragment_voice_search,
